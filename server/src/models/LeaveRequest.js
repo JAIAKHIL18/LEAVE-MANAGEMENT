@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const leaveRequestSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
   employeeName: { type: String, default: "Employee", trim: true },
   leaveType: { type: String, enum: ["Casual Leave", "Medical Leave"], required: true },
   days: { type: Number, required: true, min: 1 },

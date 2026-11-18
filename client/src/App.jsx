@@ -74,7 +74,7 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <h1>LeaveEase</h1>
+          <h1>LeaveManager</h1>
           <p>Employee Leave Management System</p>
         </div>
         <div className="portal-switch">

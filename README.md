@@ -1,6 +1,6 @@
-# LeaveEase – MERN Employee Leave Management System
+# LeaveManager – MERN Employee Leave Management System
 
-This project recreates the supplied LeaveEase dashboard reference with an employee portal and an admin portal.
+This project recreates the supplied LeaveManager dashboard reference with an employee portal and an admin portal.
 
 ## Features
 - Blue-and-white LeaveEase dashboard layout
