@@ -6,7 +6,7 @@ import LeaveRequest from "./src/models/LeaveRequest.js";
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL?.split(",") || true }));
+app.use(cors({ origin: process.env.MONGODB_URI?.split(",") || true }));
 app.use(express.json());
 app.get("/", (req, res) => res.send("LeaveEase Backend API is running"));
 app.get("/api/health", (req, res) => res.json({ status: "ok", app: "LeaveEase API" }));
