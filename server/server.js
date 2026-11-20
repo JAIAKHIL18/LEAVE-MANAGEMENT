@@ -31,7 +31,7 @@ app.post("/api/leaves", async (req, res) => {
       status: "Pending Approval"
     });
     res.status(201).json(leave);
-  } } catch (error) {
+  } catch (error) {
     console.error("Create leave error:", error);
     res.status(500).json({ message: error.message || "Could not submit leave request." });
   }
