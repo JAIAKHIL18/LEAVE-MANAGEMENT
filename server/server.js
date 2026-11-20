@@ -6,9 +6,14 @@ import LeaveRequest from "./src/models/LeaveRequest.js";
 
 dotenv.config();
 const app = express();
+
 app.use(cors({
-  origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",").map(u => u.trim().replace(/\/$/, "")) : true
-}));app.use(express.json());
+  origin: process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(",").map((u) => u.trim().replace(/\/$/, ""))
+    : true
+}));
+app.use(express.json());
+
 app.get("/", (req, res) => res.send("LeaveEase Backend API is running"));
 app.get("/api/health", (req, res) => res.json({ status: "ok", app: "LeaveEase API" }));
 
@@ -16,7 +21,10 @@ app.get("/api/leaves", async (req, res) => {
   try {
     const leaves = await LeaveRequest.find().sort({ createdAt: -1 });
     res.json(leaves);
-  } catch (error) { res.status(500).json({ message: "Could not load leave requests." }); }
+  } catch (error) {
+    console.error("GET /api/leaves error:", error);
+    res.status(500).json({ message: error.message || "Could not load leave requests." });
+  }
 });
 
 app.post("/api/leaves", async (req, res) => {
@@ -26,24 +34,36 @@ app.post("/api/leaves", async (req, res) => {
       return res.status(400).json({ message: "Enter a valid leave type, number of days and reason." });
     }
     const leave = await LeaveRequest.create({
-      leaveType, days: Number(days), reason: reason.trim(),
+      leaveType,
+      days: Number(days),
+      reason: reason.trim(),
       employeeName: employeeName?.trim() || "Employee",
       status: "Pending Approval"
     });
     res.status(201).json(leave);
   } catch (error) {
-    console.error("Create leave error:", error);
+    console.error("POST /api/leaves error:", error);
     res.status(500).json({ message: error.message || "Could not submit leave request." });
   }
+});
 
 app.patch("/api/leaves/:id", async (req, res) => {
   try {
     const { status } = req.body;
-    if (!["Approved", "Rejected", "Pending Approval"].includes(status)) return res.status(400).json({ message: "Invalid status." });
-    const leave = await LeaveRequest.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true });
+    if (!["Approved", "Rejected", "Pending Approval"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status." });
+    }
+    const leave = await LeaveRequest.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
     if (!leave) return res.status(404).json({ message: "Leave request not found." });
     res.json(leave);
-  } catch (error) { res.status(500).json({ message: "Could not update request." }); }
+  } catch (error) {
+    console.error("PATCH /api/leaves error:", error);
+    res.status(500).json({ message: error.message || "Could not update request." });
+  }
 });
 
 app.delete("/api/leaves/:id", async (req, res) => {
@@ -51,7 +71,10 @@ app.delete("/api/leaves/:id", async (req, res) => {
     const leave = await LeaveRequest.findByIdAndDelete(req.params.id);
     if (!leave) return res.status(404).json({ message: "Leave request not found." });
     res.json({ message: "Request deleted." });
-  } catch (error) { res.status(500).json({ message: "Could not delete request." }); }
+  } catch (error) {
+    console.error("DELETE /api/leaves error:", error);
+    res.status(500).json({ message: error.message || "Could not delete request." });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
